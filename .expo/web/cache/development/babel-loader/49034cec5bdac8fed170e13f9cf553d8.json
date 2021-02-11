@@ -1,0 +1,1 @@
+{"ast":null,"code":"","map":{"version":3,"sources":[],"names":[],"mappings":"","sourcesContent":["/* import { LogBox } from 'react-native'\n\nLogBox.ignoreLogs(['Remote debugger']) */\n"]},"metadata":{},"sourceType":"script"}
