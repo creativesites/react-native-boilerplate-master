@@ -3,6 +3,7 @@ import { View } from 'react-native'
 import { Provider } from 'react-redux'
 import store from 'utils/store'
 import 'utils/ignore'
+import { ModalPortal } from 'react-native-modals';
 
 // assets
 import { imageAssets } from 'theme/images'
@@ -30,6 +31,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <Router />
+      <ModalPortal />
     </Provider>
   )
 }
