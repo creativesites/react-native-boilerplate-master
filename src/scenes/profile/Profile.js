@@ -3,14 +3,19 @@ import moment from 'moment';
 import React, {useState, Fragment} from 'react';
 import {StyleSheet, View, ScrollView, Text, TouchableOpacity} from 'react-native';
 import {Calendar} from 'react-native-calendars';
+//import Calendar from 'react-native-calendar-select';
 
 const testIDs = require('./testIDs');
 
 const Profile = () => {
   const [selected, setSelected] = useState('');
+  const [selected1, setSelected1] = useState('');
 
   const onDayPress = day => {
     setSelected(day.dateString);
+  };
+  const onDayPress1 = day => {
+    setSelected1(day.dateString);
   };
 
   const getDisabledDates = (startDate, endDate, daysToDisable) => {
@@ -31,7 +36,7 @@ const Profile = () => {
       <Fragment>
         <Text style={styles.text}>Calendar with selectable date</Text>
         <Calendar
-          testID={testIDs.calendars.FIRST}
+          //testID={testIDs.calendars.FIRST}
           
           current={'2020-02-02'}
           style={styles.calendar}
@@ -42,7 +47,10 @@ const Profile = () => {
               disableTouchEvent: true,
               selectedColor: 'orange',
               selectedTextColor: 'red'
-            }
+            },
+            '2020-02-07': {startingDay: true, color: '#50cebb'},
+            '2020-02-07': {marked: true, color: '#50cebb'},
+            '2020-02-09': {endingDay: true, color: '#50cebb'}
           }}
         />
       </Fragment>
@@ -178,12 +186,19 @@ const Profile = () => {
       <Fragment>
         <Text style={styles.text}>Calendar with period marking and dot marking</Text>
         <Calendar
+        testID={testIDs.calendars.FIRST}
           current={'2012-05-16'}
           minDate={'2012-05-01'}
+          onDayPress={onDayPress}
           disabledDaysIndexes={[0, 6]}
           markingType={'period'}
           markedDates={{
-            '2012-05-15': {marked: true, dotColor: '#50cebb'},
+            [selected]: {
+              selected: true,
+              disableTouchEvent: true,
+              selectedColor: 'orange',
+              selectedTextColor: 'red'
+            },
             '2012-05-16': {marked: true, dotColor: '#50cebb'},
             '2012-05-21': {startingDay: true, color: '#50cebb', textColor: 'white'},
             '2012-05-22': {
@@ -202,7 +217,8 @@ const Profile = () => {
               customContainerStyle: {
                 borderTopRightRadius: 5,
                 borderBottomRightRadius: 5
-              }
+              },
+              
             },
             ...getDisabledDates('2012-05-01', '2012-05-30', [0, 6])
           }}

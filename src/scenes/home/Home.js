@@ -1,38 +1,36 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import _ from 'lodash';
-import moment from 'moment';
-//import PropTypes from 'prop-types'
-//import firestore from '@react-native-firebase/firestore';
+import * as firebase from 'firebase';
+import "firebase/firestore";
 
-//const economicCollection = firestore().collection('Economics/Country/EconomicIndicator');
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: 'AIzaSyDeRU8JL0NmNyuZ0gYd4I0ihRnL2t1nf-k',
+  authDomain: 'propzi-1e9c2.firebaseapp.com',
+  databaseURL: 'https://propzi-1e9c2.firebaseio.com',
+  projectId: 'propzi-1e9c2',
+  storageBucket: 'propzi-1e9c2.appspot.com',
+  messagingSenderId: 'sender-id',
+  appId: '520048464069-fp3fgl8lfp7b1q9unqiq94cugv74km72.apps.googleusercontent.com',
+  measurementId: 'G-measurement-id',
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const dbh = firebase.firestore();
+
+
 import {
   StyleSheet, Text, View, StatusBar, Dimensions,TouchableOpacity,
   FlatList,
-  ScrollView, Image, Animated, SafeAreaView, Modal, Pressable
+  ScrollView, Image, Animated, SafeAreaView, Modal, Pressable, ActivityIndicator
 } from 'react-native'
-//import Button from 'components/Button'
-import { colors } from 'theme'
+//import { colors } from 'theme'
 import { LineChart} from "react-native-chart-kit";
-//import {Card} from 'react-native-shadow-cards';
-//import { Details } from "../details/Details";
-//import * as theme from '../theme1';
-//import LottieView from 'lottie-react-native';
-//import { Card, Badge, Block, Text1 } from '../details/components';
-import { theme } from '../details/constants';
-//import { mocks1 } from "../details/constants";
+//import { theme } from '../details/constants';
 import FontIcon from 'react-native-vector-icons/FontAwesome5'
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 
-/* firestore()
-  .collection('Economics/Country/EconomicIndicator')
-  .get()
-  .then(querySnapshot => {
-    console.log('Total cards: ', querySnapshot.size);
-
-    querySnapshot.forEach(documentSnapshot => {
-      console.log('card ID: ', documentSnapshot.id, documentSnapshot.data());
-    });
-  }); */
 
 const { width, height } = Dimensions.get('window');
 const labels = [
@@ -49,89 +47,9 @@ const data = [
 const data1 = [
   892000, 902000, 907000,915000,912000,918000
   ];
-  const mocks = [
-    {
-      id: 1,
-      user: {
-        name: 'Lelia Chavez',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      },
-      saved: true,
-      location: 'Peel Bank Data',
-      temperature: 34,
-      title: 'Employment Rate Decreased',
-      description: 'Unemployment has increased in the Peel region, from 11.3% to 11.7% vs last month.',
-      rating: 4.3,
-      reviews: 3212,
-      preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      images: [
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      ]
-    },
-    {
-      id: 2,
-      user: {
-        name: 'Lelia Chavez',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      },
-      saved: false,
-      location: 'Loutraki, Greece',
-      temperature: 34,
-      title: 'Loutraki',
-      description: 'This attractive small town, 80 kilometers from Athens',
-      rating: 4.6,
-      reviews: 3212,
-      preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      images: [
-        'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-      ]
-    },
-    {
-      id: 3,
-      user: {
-        name: 'Lelia Chavez',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      },
-      saved: true,
-      location: 'Santorini, Greece',
-      temperature: 34,
-      title: 'Santorini',
-      description: 'Santorini - Description',
-      rating: 3.2,
-      reviews: 3212,
-      preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      images: [
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      ]
-    },
-    {
-      id: 4,
-      user: {
-        name: 'Lelia Chavez',
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      },
-      location: 'Loutraki, Greece',
-      temperature: 34,
-      title: 'Loutraki',
-      description: 'This attractive small town, 80 kilometers from Athens',
-      rating: 5,
-      reviews: 3212,
-      preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      images: [
-        'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-      ]
-    },
-  ]
   
-  const styles1 = StyleSheet.create({
+ 
+const styles1 = StyleSheet.create({
     
     memberImage: {
       height: 30,
@@ -164,8 +82,8 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   tab: {
-    marginRight: theme.sizes.base * 2,
-    paddingBottom: theme.sizes.base
+    marginRight: 16 * 2,
+    paddingBottom: 16
   },
   title: {
     fontSize: 24,
@@ -280,18 +198,18 @@ const styles = StyleSheet.create({
   recommendedHeader: {
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingHorizontal: theme.sizes.padding,
-    marginVertical: theme.sizes.margin * 0.66
+    paddingHorizontal: 25,
+    marginVertical: 20 * 0.66
   },
   recommendedList: {
   },
   recommendation: {
-    width: (width - (theme.sizes.padding * 2)) / 1.2,
+    width: (width - (25 * 2)) / 1.2,
     marginHorizontal: 8,
-    backgroundColor: theme.colors.white,
+    backgroundColor: '#ffffff',
     overflow: 'hidden',
-    borderTopRightRadius: theme.sizes.border,
-    borderTopLeftRadius: theme.sizes.border,
+    borderTopRightRadius: 16,
+    borderTopLeftRadius: 16,
   },
   recommendation1: {
     width: (width - 50),
@@ -311,24 +229,24 @@ const styles = StyleSheet.create({
   recommendationOptions: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.sizes.padding / 2,
+    padding: 25 / 2,
     position: 'absolute',
     top: -20,
     left: 0,
     right: 0,
   },
   recommendationTemp: {
-    fontSize: theme.sizes.font * 1.25,
-    color: theme.colors.white
+    fontSize: 14 * 1.25,
+    color: '#fff'
   },
   recommendationImage: {
-    width: (width - (theme.sizes.padding * 2)) / 1.2,
-    height: (width - (theme.sizes.padding * 2)) / 2,
+    width: (width - (25 * 2)) / 1.2,
+    height: (width - (25 * 2)) / 2,
   },
   
   
   shadow: {
-    shadowColor: theme.colors.black,
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 6,
@@ -502,24 +420,40 @@ const styles = StyleSheet.create({
 
 const imgs1 = [
   {
-    id:3, 
-    name: "Econominc Indicators", 
-    updates:"Group 1", 
-    updatedDate: '2 Feb 2021',  
+    id:3,
     members:[
-      "https://bootdey.com/img/Content/avatar/avatar6.png", 
-      "https://bootdey.com/img/Content/avatar/avatar1.png", 
-      "https://bootdey.com/img/Content/avatar/avatar2.png",
-      "https://bootdey.com/img/Content/avatar/avatar7.png"
+      "https://i.cbc.ca/1.1688376.1379083887!/httpImage/image.jpg_gen/derivatives/16x9_780/hi-unemployed.jpg", 
+      "https://www.cbre.us/-/media/cbre/countryunitedstates/media/images/pr-stock-images/pr-image-04.jpg", 
+      "https://hughesmarino.com/wp-content/uploads/San-Diego-downtown-dusk.jpg",
+      "https://cdn-res.keymedia.com/cms/images/ca/046/0348_637250306371916023.jpg"
     ]
   }
 ]
+const imgs2 = [
+  {
+    id: 4,
+    members: [
+      "https://www.greenwoodswim.com/mabutap/3250/Marijuana-Kamloops-British-Colombia-Canada-5e72a9c9d4bdc.jpg",
+      "https://www.chatelaine.com/wp-content/uploads/2017/01/Morin_Library_credit_Patrick_Matte-1.jpg",
+      "https://images.adsttc.com/media/images/595b/9b16/b22e/386b/ae00/011e/newsletter/007-_Perkins_Will_Albion_Library.jpg",
+      "https://cdn.renewcanada.net/wp-content/uploads/2017/12/22144736/manitoba-government.jpg"
+    ]
+  }
+]
+const imgs3 = [
+  {
+    id: 5,
+    members: [
+      "https://constructionreviewonline.com/wp-content/uploads/2020/11/image3.jpg",
+      "https://loveincorporated.blob.core.windows.net/contentimages/gallery/39f51006-18b2-4e24-9a94-52e8a4dc05b8-shutterstock_521094097.jpg",
+      "https://www.thespruce.com/thmb/pIk77UlWUgSY2VGy2yHvKclVYZU=/2121x1193/smart/filters:no_upscale()/Family-home-renovation-GettyImages-513438249-58a0e0803df78c4758055c1a.jpg",
+      "https://www.refreshrenovations.global/images/uploads/plan-hero.jpg"
+    ]
+  }
+]
+
 const testIDs = require('./testIDs');
 
-/* const Home = ({ navigation }) => (
-  
-  
-) */
 
 const loadItems = (day) => {
   setTimeout(() => {
@@ -546,6 +480,9 @@ const loadItems = (day) => {
     });
   }, 1000);
 }
+const mocks = []
+
+let startDate = ''
 
 const Home = () => {
   const [shouldShow, setShouldShow] = useState(false);
@@ -559,17 +496,136 @@ const Home = () => {
   const [selected1, setSelected1] = useState('');
   const [dateSelected, setDate] = useState(false);
   const [dateSelected1, setDate1] = useState(false);
+  
+
+  const [loading, setLoading] = useState(true); 
+  const [users, setUsers] = useState([]); 
+  const [userData, setUserData] = useState('')
+  const[userProperties, setProperties] = useState([])
+  const[community, setCommunities] = useState([])
+
+  useEffect(() => {
+    const subscriber = dbh
+      .collection('Economics/Country/EconomicIndicator')
+      .onSnapshot((querySnapshot) => {
+        const users = [];
+
+      querySnapshot.forEach(documentSnapshot => {
+        users.push({
+          ...documentSnapshot.data(),
+          key: documentSnapshot.id,
+        });
+      });
+
+      setUsers(users);
+      setLoading(false);
+      });
+
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+  }, []);
+  useEffect(() => {
+    const subscriber1 = dbh
+      .collection('Economics/Toronto/EconomicIndicator')
+      .onSnapshot((querySnapshot) => {
+        const users1 = [];
+
+      querySnapshot.forEach(documentSnapshot => {
+        users1.push({
+          ...documentSnapshot.data(),
+          key: documentSnapshot.id,
+        });
+      });
+
+      //setUsers(users =>[...users, users1]);
+      setUsers(users => users.concat(users1))
+      setLoading(false);
+      });
+
+    // Unsubscribe from events when no longer in use
+    return () => subscriber1();
+  }, []);
+
+  useEffect(() => {
+    const userData1 = dbh
+      .collection('UserDetails/26P9zBdu34c5UvE2OffJkRSIkgZ2/Property')
+      .onSnapshot((querySnapshot) => {
+        let userData2 = '';
+
+        querySnapshot.forEach(documentSnapshot => {
+          let b = documentSnapshot.data()
+          let street = b.streetName
+          let streetNumber = b.streetNumber
+          let address = streetNumber + ' ' + street
+          userData2 = address
+        });
+        
+      
+      
+      setUserData(userData2)
+      setLoading(false);
+      });
+
+    // Unsubscribe from events when no longer in use
+    return () => userData1();
+  }, []);
+  useEffect(() => {
+    const userProperty1 = dbh
+      .collection('UserDetails/26P9zBdu34c5UvE2OffJkRSIkgZ2/Property')
+      .onSnapshot((querySnapshot) => {
+        let userProperty2 = [];
+
+        querySnapshot.forEach(documentSnapshot => {
+          userProperty2.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
+        });
+        
+      
+      
+      setProperties(userProperty2)
+      setLoading(false);
+      });
+
+    // Unsubscribe from events when no longer in use
+    return () => userProperty1();
+  }, []);
+  useEffect(() => {
+    const community1 = dbh
+      .collection('Community/Ajax/Carruthers Creek')
+      .onSnapshot((querySnapshot) => {
+        const communities2 = [];
+
+      querySnapshot.forEach(documentSnapshot => {
+        communities2.push({
+          ...documentSnapshot.data(),
+          key: documentSnapshot.id,
+        });
+      });
+
+      setCommunities(communities2)
+      setLoading(false);
+      });
+
+    // Unsubscribe from events when no longer in use
+    return () => community1();
+  }, []);
+
 
   const onDayPress = day => {
     setSelected(day.dateString);
     setDate(!dateSelected);
+    startDate = day.dateString
+    console.log('start date:' + startDate)
   };
   const { destinations } = mocks;
   let dateOne = '2021-02-14'
   let dateTwo = '2021-02-18'
   
-  
-  //const isLastItem = index === destinations.length - 1;
+  if (loading) {
+    return <ActivityIndicator />;
+  }
   
   return (
     
@@ -581,9 +637,10 @@ const Home = () => {
       <View style={styles.root}>
         
       <StatusBar barStyle="light-content" />
+      
       <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingStart: 20, paddingEnd:20, paddingTop: 10}}>
       <View style={{flexDirection: 'column'}}>
-      <Text style={styles.title}>6336 Culmore Cres.</Text>
+      <Text style={styles.title}>{userData}</Text>
       <Text style={styles.stitle}>Last Updated at 12/28/2020.</Text>
       </View>
       <View style={{flexDirection: 'column'}}>
@@ -616,12 +673,20 @@ const Home = () => {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={[styles.name, {marginTop:5, marginBottom:5}]}>Select Property</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>6336 Culmore Cres</Text>
-              </Pressable>
+              <FlatList
+                  data={userProperties}
+                  renderItem={({ item }) => (
+                    <View style={{ height: 50, flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                      <Pressable
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={() => setModalVisible(!modalVisible)}
+                      >
+                    <Text style={styles.textStyle}>{item.streetNumber} {item.streetName}</Text>
+                      </Pressable>
+                    </View>
+                  )}
+                />
+              
             </View>
           </View>
         </Modal>
@@ -648,7 +713,8 @@ const Home = () => {
           
           <View style={{flex: 1, alignContent: 'center'}}>
             {NoDateSelected? (
-                 <Fragment>
+              <TouchableOpacity onPress={() => nowSelected(!NoDateSelected)}>
+                  <Fragment>
                  <Calendar
                  //markingType={'period'}
                  current={'2020-02-02'}
@@ -661,20 +727,20 @@ const Home = () => {
                    solid
                  />)}
                  onDayPress={onDayPress}
+                 markingType={'period'}
                  markedDates={{
                    [selected]: {
                      selected: true,
                      disableTouchEvent: true,
                      selectedColor: '#70d7c7',
                      selectedTextColor: 'white'
-                   }
+                   },
+                   '2021-02-14': {marked: true, startingDay: true, color: '#50cebb', textColor: 'white'},
+                   '2021-02-15': {marked: true, color: '#70d7c7', textColor: 'white'},
+                   '2021-02-16': {marked: true, color: '#70d7c7', textColor: 'white'},
+                   '2021-02-17': {marked: true, endingDay: true, color: '#50cebb', textColor: 'white'},
                  }}
-                 /* markedDates={{
-                   '2021-02-14': {startingDay: true, color: '#50cebb', textColor: 'white'},
-                   '2021-02-15': {color: '#70d7c7', textColor: 'white'},
-                   '2021-02-16': {color: '#70d7c7', textColor: 'white'},
-                   '2021-02-17': {endingDay: true, color: '#50cebb', textColor: 'white'},
-                 }} */
+                 
                  onPressArrowLeft={subtractMonth => subtractMonth()}
                  // Handler which gets executed when press arrow icon right. It receive a callback can go next month
                  onPressArrowRight={addMonth => addMonth()}
@@ -684,10 +750,16 @@ const Home = () => {
                />
                  </Fragment>
                
+              </TouchableOpacity>
+                 
             ):null}
            
           </View> 
-        ): null}
+        ): 
+        <View>
+          <Text style={{fontSize:10, color: '#979797', paddingLeft:3}}>You have selected your start date as: {selected}</Text>
+        </View>
+        }
       
       {shouldShow4 ? (
         <TouchableOpacity onPress={() => setShouldShow4(!shouldShow4)}>
@@ -962,7 +1034,7 @@ const Home = () => {
           <View style={{flex: 1, justifyContent: 'space-between'}}>
           <TouchableOpacity style={[styles.card,  {marginBottom: 20}]} onPress={() => setShouldShow(!shouldShow)}>
           <View style={styles.cardContent}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (theme.sizes.padding * 2)) / 1.1}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (25 * 2)) / 1.1}}>
               <View style={{flexDirection: 'column', justifyContent: 'space-between'}}>
               <Text style={styles.name}>Home Renovations</Text>
               <Text style={styles.count}>Last updated on Dec 28th, 2020</Text>
@@ -995,34 +1067,34 @@ const Home = () => {
                   scrollEventThrottle={16}
                   snapToAlignment="center"
                   style={{ overflow: 'visible', wid: (width - 50) }}
-                  data={mocks}
+                  data={community}
                   keyExtractor={(item, index) => `${item.id}`}
                   renderItem={({ item, index }) => 
                   <View style={[
                     styles.flex, styles.column, styles.recommendation, 
-                    index === 0 ? { marginLeft: theme.sizes.margin } : null,
-                    // isLastItem ? { marginRight: theme.sizes.margin / 2 } : null,
+                    index === 0 ? { marginLeft: 20 } : null,
+                    // isLastItem ? { marginRight: 20 / 2 } : null,
                   ]}>
                     <View style={[styles.flex, styles.recommendationHeader]}>
-                      <Image style={[styles.recommendationImage]} source={{ uri: item.preview }} />
+                      <Image style={[styles.recommendationImage]} source={{ uri: item.img }} />
                       <View style={[ styles.flex1, styles.row, styles.recommendationOptions ]}>
                         
-                        <View style={[styles.card3, {marginLeft: ((width - (theme.sizes.padding * 2)) / 1.2) - 120, marginTop: 20}]}>
-                            <Text style={styles.count}>Impacts Peel</Text>
+                        <View style={[styles.card3, {marginLeft: ((width - (25 * 2)) / 1.2) - 120, marginTop: 20}]}>
+                            <Text style={styles.count}>{item.community}</Text>
                            
                           </View>
                       </View>
                     </View>
-                    <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-                      <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{item.title}</Text>
-                      <Text style={{ color: theme.colors.caption }}>{item.location}</Text>
-                      <Text style={{ color: theme.colors.active }}>{item.description}</Text>
+                    <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: 25 / 2 }]}>
+                      <Text style={{ fontSize: 14 * 1.25, fontWeight: '500', paddingBottom: 25 / 4.5, }}>{item.heading}</Text>
+                      <Text style={{ color: '#788490' }}>From: {item.dataSource}</Text>
+                      <Text style={{ color: '#1f2123' }}>{item.description}</Text>
                       <View style={
                         { marginTop: 20 }
                       }>
                         <View style={styles.card4}>
                             <Text style={styles.count}>Propzi Impact:</Text>
-                            <Text style={styles.count1}>-17%</Text>
+                            <Text style={styles.count1}>{item.propziImpact}</Text>
                             
                           </View>
                       </View>
@@ -1035,18 +1107,15 @@ const Home = () => {
         
         </View>
         ) : 
-        <View>
+        <View >
               <TouchableOpacity style={[styles.card,  {marginBottom: 5}]} onPress={() => setShouldShow(!shouldShow)}>
               <View style={styles.cardContent}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <Text style={styles.name}>Home Renovations</Text>
-                <Text style={{alignItems: 'flex-end', paddingLeft: 45, alignSelf: 'flex-end', marginRight: 5, marginBottom: 5}}>12 Updates</Text>
-                </View>
-                
-                <Text style={[styles.count]}>Last visited on 2 Feb 2021</Text>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <FlatList
-                  data={imgs1}
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (25 * 2)) / 1.1}}>
+                  <View style={{flexDirection: 'column', justifyContent: 'space-between'}}>
+                  <Text style={styles.name}>Home Renovations</Text>
+                  <Text style={[styles.count]}>Last visited on 2 Feb 2021</Text>
+                  <FlatList
+                  data={imgs3}
                   keyExtractor={(item)=>{
                     return item.id;
                   }}
@@ -1065,8 +1134,12 @@ const Home = () => {
                       </View>
                     );
                   }}/>
-                  <View style={{marginTop: -10, alignContent: 'flex-end', paddingLeft: 50}}>
-              <View style={{width: 50, height: 50, borderRadius: 25, backgroundColor: '#f6f6f6', alignContent: 'flex-end', alignItems: 'center'}}>
+
+                  </View>
+                  <View style={{flexDirection: 'column', justifyContent: 'space-between'}}>
+                    <Text style={{alignItems: 'flex-end', paddingLeft: 45, alignSelf: 'flex-end', marginRight: 5, marginBottom: 5}}>{community.length} Updates</Text>
+                    <View style={{ alignSelf: 'flex-end', paddingTop:5}}>
+                    <View style={{width: 50, height: 50, borderRadius: 25, backgroundColor: '#f6f6f6', alignContent: 'flex-end', alignItems: 'center'}}>
               <View style={{paddingTop: 5}}>
               <FontIcon
                       name="caret-down"
@@ -1077,6 +1150,17 @@ const Home = () => {
               </View>
               
               </View>
+                    </View>
+                    
+                  </View>
+                
+                </View>
+                
+                
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                
+                  <View style={{marginTop: -10, alignContent: 'flex-end', paddingLeft: 50}}>
+              
               </View>
                 </View>
                 
@@ -1091,7 +1175,7 @@ const Home = () => {
           <View>
           <TouchableOpacity style={[styles.card1,  {marginBottom: 20}]} onPress={() => setShouldShow1(!shouldShow1)}>
           <View style={styles.cardContent}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (theme.sizes.padding * 2)) / 1.1}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (25 * 2)) / 1.1}}>
               <View style={{flexDirection: 'column', justifyContent: 'space-between'}}>
               <Text style={styles.name}>Economic Indicators</Text>
               <Text style={styles.count}>Last updated on Dec 28th, 2020</Text>
@@ -1117,42 +1201,42 @@ const Home = () => {
           <View style={[styles.flex, styles.column, styles.recommended ]}>
             
             <View style={[styles.column, styles.recommendedList]}>
-                <FlatList
-                  horizontal = {true}
+            <FlatList
+                  horizontal
                   pagingEnabled={true}
                   showsHorizontalScrollIndicator={false}
                   legacyImplementation={false}
                   scrollEventThrottle={16}
                   snapToAlignment="center"
                   style={{ overflow: 'visible', wid: (width - 50) }}
-                  data={mocks}
+                  data={users}
                   keyExtractor={(item, index) => `${item.id}`}
                   renderItem={({ item, index }) => 
                   <View style={[
                     styles.flex, styles.column, styles.recommendation, 
-                    index === 0 ? { marginLeft: theme.sizes.margin } : null,
-                    // isLastItem ? { marginRight: theme.sizes.margin / 2 } : null,
+                    index === 0 ? { marginLeft: 20 } : null,
+                    // isLastItem ? { marginRight: 20 / 2 } : null,
                   ]}>
                     <View style={[styles.flex, styles.recommendationHeader]}>
-                      <Image style={[styles.recommendationImage]} source={{ uri: item.preview }} />
+                      <Image style={[styles.recommendationImage]} source={{ uri: item.img }} />
                       <View style={[ styles.flex1, styles.row, styles.recommendationOptions ]}>
                         
-                        <View style={[styles.card3, {marginLeft: ((width - (theme.sizes.padding * 2)) / 1.2) - 120, marginTop: 20}]}>
-                            <Text style={styles.count}>Impacts Peel</Text>
+                        <View style={[styles.card3, {marginLeft: ((width - (25 * 2)) / 1.4) - 120, marginTop: 20}]}>
+                            <Text style={styles.count}>{item.categoryIndicator}</Text>
                            
                           </View>
                       </View>
                     </View>
-                    <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-                      <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{item.title}</Text>
-                      <Text style={{ color: theme.colors.caption }}>{item.location}</Text>
-                      <Text style={{ color: theme.colors.active }}>{item.description}</Text>
+                    <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: 25 / 2 }]}>
+                      <Text style={{ fontSize: 14 * 1.25, fontWeight: '500', paddingBottom: 25 / 4.5, }}>{item.indicator}</Text>
+                      <Text style={{ color: '#788490' }}>From: {item.dataSource}</Text>
+                      <Text style={{ color: '#1f2123' }}>{item.description}</Text>
                       <View style={
                         { marginTop: 20 }
                       }>
                         <View style={styles.card4}>
                             <Text style={styles.count}>Propzi Impact:</Text>
-                            <Text style={styles.count1}>-17%</Text>
+                            <Text style={styles.count1}>{item.propziImpact}</Text>
                             
                           </View>
                       </View>
@@ -1170,7 +1254,7 @@ const Home = () => {
         <View>
               <TouchableOpacity style={[styles.card1,  {marginBottom: 0}]} onPress={() => setShouldShow1(!shouldShow1)}>
               <View style={styles.cardContent}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (theme.sizes.padding * 2)) / 1.1}}>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (25 * 2)) / 1.1}}>
                 <View style={{flexDirection: 'column'}}>
                   <Text style={styles.name}>Econominc Indicators</Text>
                   <Text style={[styles.count]}>Last visited on 2 Feb 2021</Text>
@@ -1201,7 +1285,7 @@ const Home = () => {
                 
                 </View>
                 <View style={{flexDirection: 'column', justifyContent: 'space-between'}}>
-                  <Text style={{ alignSelf: 'flex-start', marginRight: 5, marginBottom: 5}}>12 Updates</Text>
+                  <Text style={{ alignSelf: 'flex-start', marginRight: 5, marginBottom: 5}}>{users.length} Updates</Text>
                   <View style={{ alignSelf: 'flex-end', paddingTop:5}}>
               <View style={{width: 50, height: 50, borderRadius: 25, backgroundColor: '#f6f6f6', alignContent: 'flex-end', alignItems: 'center'}}>
               <View style={{paddingTop: 5}}>
@@ -1234,7 +1318,7 @@ const Home = () => {
           <View>
           <TouchableOpacity style={[styles.card2,  {marginBottom: 20}]} onPress={() => setShouldShow2(!shouldShow2)}>
           <View style={styles.cardContent}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (theme.sizes.padding * 2)) / 1.1}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (25 * 2)) / 1.1}}>
               <View style={{flexDirection: 'column', justifyContent: 'space-between'}}>
               <Text style={styles.name}>Neighbourhood Development</Text>
               <Text style={styles.count}>Last updated on Dec 28th, 2020</Text>
@@ -1257,6 +1341,7 @@ const Home = () => {
             
           </View>
         </TouchableOpacity>
+        <ScrollView horizontal={true}>
         <View style={[styles.flex, styles.column, styles.recommended ]}>
             
             <View style={[styles.column, styles.recommendedList]}>
@@ -1268,34 +1353,34 @@ const Home = () => {
                   scrollEventThrottle={16}
                   snapToAlignment="center"
                   style={{ overflow: 'visible', wid: (width - 50) }}
-                  data={mocks}
+                  data={community}
                   keyExtractor={(item, index) => `${item.id}`}
                   renderItem={({ item, index }) => 
                   <View style={[
                     styles.flex, styles.column, styles.recommendation, 
-                    index === 0 ? { marginLeft: theme.sizes.margin } : null,
-                    // isLastItem ? { marginRight: theme.sizes.margin / 2 } : null,
+                    index === 0 ? { marginLeft: 20 } : null,
+                    // isLastItem ? { marginRight: 20 / 2 } : null,
                   ]}>
                     <View style={[styles.flex, styles.recommendationHeader]}>
-                      <Image style={[styles.recommendationImage]} source={{ uri: item.preview }} />
+                      <Image style={[styles.recommendationImage]} source={{ uri: item.img }} />
                       <View style={[ styles.flex1, styles.row, styles.recommendationOptions ]}>
                         
-                        <View style={[styles.card3, {marginLeft: ((width - (theme.sizes.padding * 2)) / 1.2) - 120, marginTop: 20}]}>
-                            <Text style={styles.count}>Impacts Peel</Text>
+                        <View style={[styles.card3, {marginLeft: ((width - (25 * 2)) / 1.4) - 120, marginTop: 20}]}>
+                            <Text style={styles.count}>{item.community}</Text>
                            
                           </View>
                       </View>
                     </View>
-                    <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-                      <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{item.title}</Text>
-                      <Text style={{ color: theme.colors.caption }}>{item.location}</Text>
-                      <Text style={{ color: theme.colors.active }}>{item.description}</Text>
+                    <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: 25 / 2 }]}>
+                      <Text style={{ fontSize: 14 * 1.25, fontWeight: '500', paddingBottom: 25 / 4.5, }}>{item.heading}</Text>
+                      <Text style={{ color: '#788490' }}>From: {item.dataSource}</Text>
+                      <Text style={{ color: '#1f2123' }}>{item.description}</Text>
                       <View style={
                         { marginTop: 20 }
                       }>
                         <View style={styles.card4}>
                             <Text style={styles.count}>Propzi Impact:</Text>
-                            <Text style={styles.count1}>-17%</Text>
+                            <Text style={styles.count1}>{item.propziImpact}</Text>
                             
                           </View>
                       </View>
@@ -1304,20 +1389,22 @@ const Home = () => {
                   }
                 />
               </View>
-            </View>
+        </View>
+        </ScrollView>
+        
         
         </View>
         ) : 
         <View>
               <TouchableOpacity style={[styles.card2,  {marginBottom: 20}]} onPress={() => setShouldShow2(!shouldShow2)}>
               <View style={styles.cardContent}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (theme.sizes.padding * 2)) / 1.1}}>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', width: (width - (25 * 2)) / 1.1}}>
                   <View style={{flexDirection: 'column', justifyConten: 'space-between'}}>
                   <Text style={styles.name}>Neighbourhood Development</Text>
                   <Text style={[styles.count]}>Last visited on 2 Feb 2021</Text>
                   <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <FlatList
-                  data={imgs1}
+                  data={imgs2}
                   keyExtractor={(item)=>{
                     return item.id;
                   }}
@@ -1342,7 +1429,7 @@ const Home = () => {
                   </View>
 
                   <View style={{flexDirection: 'column', justifyConten: 'space-between', alignSelf: 'flex-end'}}>
-                  <Text style={{alignItems: 'flex-end', alignSelf: 'flex-end', marginBottom: 5}}>12 Updates</Text>
+                  <Text style={{alignItems: 'flex-end', alignSelf: 'flex-end', marginBottom: 5}}>{community.length} Updates</Text>
                   <View style={{alignSelf: 'flex-end'}}>
                     <View style={{width: 50, height: 50, borderRadius: 25, backgroundColor: '#f6f6f6', alignContent: 'center', alignItems: 'center'}}>
                     <View style={{paddingTop: 5}}>
@@ -1376,17 +1463,9 @@ const Home = () => {
   );
 };
 
-
-
-/* Home.propTypes = {
-  navigation: PropTypes.shape({
-    navigate: PropTypes.func,
-  }),
-} */
-
 Home.defaultProps = {
   //navigation: { navigate: () => null },
-  destinations: mocks
+ 
 }
 
 export default Home
